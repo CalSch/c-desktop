@@ -1,8 +1,9 @@
-#include <stdarg.h>  // For va_start, etc.
+#include <stdarg.h>
 #include <string>
 #include "util.h"
+#include "animation.h"
 
-std::string string_format(const std::string fmt, ...) {
+std::string cal::string_format(const std::string fmt, ...) {
     int size = ((int)fmt.size()) * 2 + 50;   // Use a rubric appropriate for your code
     std::string str;
     va_list ap;
@@ -21,4 +22,16 @@ std::string string_format(const std::string fmt, ...) {
             size *= 2;      // Guess at a larger size (OS specific)
     }
     return str;
+}
+
+float cal::lerp(float a, float b, float t) {
+    return a + t * (b - a);
+}
+
+cal::Transform cal::lerp(Transform a, Transform b,float t) {
+    return {
+        a.pos + t * (b.pos - a.pos),
+        a.scale + t * (b.scale - a.scale),
+        a.rotation + t * (b.rotation - a.rotation),
+    };
 }

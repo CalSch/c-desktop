@@ -3,12 +3,30 @@
 #include <string>
 #include <stdio.h>
 #include "util.h"
+#include "animation.h"
+#include "easings.h"
 
+#pragma region vars
 int t=0;
 sf::Vector2f mousePos;
+sf::Vector2f oldMousePos;
+sf::Vector2f mouseDelta;
 sf::Vector2i realMousePos;
+
+bool mouseLeftDown=false;
+bool oldMouseLeftDown=false;
+bool mouseLeftPressed=false;
+bool mouseLeftReleased=false;
+
+bool mouseRightDown=false;
+bool oldMouseRightDown=false;
+bool mouseRightPressed=false;
+bool mouseRightReleased=false;
+
+
 float mouseSmoothness=3;
 float mouseSize=36;
+#pragma endregion
 
 const char* str(int    a) {return std::to_string(a).c_str();}
 const char* str(float  a) {return std::to_string(a).c_str();}
@@ -17,6 +35,10 @@ const char* str(double a) {return std::to_string(a).c_str();}
 float roundNth(float x,float n) {
     return std::roundf(x*n)/n;
 }
+
+
+cal::Animation ani=cal::Animation(0.1,{{0,0},{1,1},0},{{0,0},{0.8,0.8},0},&cal::linear);
+cal::Transform aniT;
 
 
 int main() {
@@ -98,6 +120,7 @@ int main() {
 	firstFrameTime=my_clock.getElapsedTime();
     #pragma endregion
     while (window.isOpen()) {
+        #pragma region engine
 		currentTime=my_clock.getElapsedTime();
 		deltaTime=currentTime-lastFrameTime;
 		lastFrameTime=my_clock.getElapsedTime();
@@ -112,21 +135,47 @@ int main() {
 
         realMousePos=sf::Mouse::getPosition(window);
         mousePos=sf::Vector2f(mousePos)+sf::Vector2f(sf::Vector2f(realMousePos)-mousePos)/mouseSmoothness;
+        mouseDelta=mousePos-oldMousePos;
+
+        mouseLeftDown=sf::Mouse::isButtonPressed(sf::Mouse::Left);
+        mouseRightDown=sf::Mouse::isButtonPressed(sf::Mouse::Right);
+        mouseLeftPressed=!oldMouseLeftDown && mouseLeftDown;
+        mouseRightPressed=!oldMouseRightDown && mouseRightDown;
+        mouseLeftReleased=oldMouseLeftDown && !mouseLeftDown;
+        mouseRightReleased=oldMouseRightDown && !mouseRightDown;
+
+        #pragma endregion
+
+        // ==== Update ====
+
+		cursorSpr.setPosition({mousePos.x,mousePos.y});
+        if (mouseLeftPressed) {
+            ani.restart();
+            ani.easing=&cal::linear;
+        } else if (mouseLeftReleased) {
+            ani.restart();
+            ani.easing=&cal::rLinear;
+        }
+        aniT=ani.getCurrentTransform();
+        cursorSpr.setScale(aniT.scale);
+		text.setString(cal::string_format("%f\n%d",ani.time,sf::Mouse::isButtonPressed(sf::Mouse::Left)));
+
+
+        // ==== Draw ====
+
 
         window.clear();
 
         window.draw(wallpaperSpr);
-
-		// shape.setRadius(currentTime.asSeconds()*2);
-		shape.setPosition({mousePos.x,mousePos.y});
-		cursorSpr.setPosition({mousePos.x,mousePos.y});
-		text.setString(string_format("%d,%d\n%.1f",sf::Mouse::getPosition(window).x,sf::Mouse::getPosition(window).y,roundNth(1.0f/deltaTime.asSeconds(),10)));
         window.draw(text);
         window.draw(cursorSpr);
 
         window.display();
 
 		t++;
+        oldMousePos=mousePos;
+        oldMouseLeftDown=mouseLeftDown;
+        oldMouseRightDown=mouseRightDown;
     }
 
     printf("\n\n\n");
