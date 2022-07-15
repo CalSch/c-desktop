@@ -16,15 +16,22 @@
 // }
 
 void cal::Animation::restart() {
-	clock.restart();
+	active=true;
+	time=0;
+}
+void cal::Animation::stop() {
+	active=false;
+}
+
+void cal::Animation::update(float dt) {
+	if (!active) return;
+	time+=dt;
+	if (time>duration) {
+		time-=dt;
+		active=false;
+	}
 }
 
 cal::Transform cal::Animation::getCurrentTransform() {
-	time=easing(clock.getElapsedTime().asSeconds()/duration);
-	if (time>=1) {
-		return to;
-	} else if (time<=0) {
-		return from;
-	}
-	return cal::lerp(from,to,time);
+	return cal::lerp(from,to,easing(time/duration));
 }

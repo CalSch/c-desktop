@@ -18,8 +18,9 @@ namespace cal {
 			float (*easing)(float);
 			float time;
 			float duration;
-			sf::Clock clock;
+			bool active;
 
+			Animation() {}
 			Animation(
 				float duration,
 				Transform from,
@@ -31,9 +32,12 @@ namespace cal {
 				this->to=to;
 				this->easing=easing;
 				this->time=0.0f;
+				this->active=true;
 			}
 
 			Transform getCurrentTransform();
+			void update(float dt);
+			void stop();
 			void restart();
 	};
 

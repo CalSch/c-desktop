@@ -25,7 +25,7 @@ bool mouseRightReleased=false;
 
 
 float mouseSmoothness=3;
-float mouseSize=36;
+float mouseSize=22;
 #pragma endregion
 
 const char* str(int    a) {return std::to_string(a).c_str();}
@@ -37,7 +37,7 @@ float roundNth(float x,float n) {
 }
 
 
-cal::Animation ani=cal::Animation(0.1,{{0,0},{1,1},0},{{0,0},{0.8,0.8},0},&cal::linear);
+cal::Animation ani;
 cal::Transform aniT;
 
 
@@ -60,6 +60,9 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(1920, 1080), "Desktop!",sf::Style::Fullscreen);
     window.setVerticalSyncEnabled(true);
     window.setMouseCursorVisible(false);
+
+    window.clear(sf::Color::Magenta);
+    window.display();
 
     #pragma endregion
     #pragma region resources
@@ -91,9 +94,6 @@ int main() {
     #pragma endregion
     #pragma region shapes
 
-    sf::CircleShape shape(5);
-    shape.setFillColor(sf::Color::Green);
-
 	sf::Text text("",sysfont,16);
     text.setFillColor(sf::Color::White);
     text.setOutlineColor(sf::Color::Black);
@@ -115,7 +115,11 @@ int main() {
 
     
     #pragma endregion
+    #pragma region animation
+    
+    ani=cal::Animation(0.075f,{{0,0},cursorSpr.getScale(),0},{{0,0},cursorSpr.getScale()*0.8f,0},&cal::linear);
 
+    #pragma endregion
 
 	firstFrameTime=my_clock.getElapsedTime();
     #pragma endregion
@@ -148,11 +152,13 @@ int main() {
 
         // ==== Update ====
 
+        ani.update(deltaTime.asSeconds());
+
 		cursorSpr.setPosition({mousePos.x,mousePos.y});
-        if (mouseLeftPressed) {
+        if (mouseLeftPressed||mouseRightPressed) {
             ani.restart();
             ani.easing=&cal::linear;
-        } else if (mouseLeftReleased) {
+        } else if (mouseLeftReleased||mouseRightReleased) {
             ani.restart();
             ani.easing=&cal::rLinear;
         }
