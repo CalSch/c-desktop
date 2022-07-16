@@ -26,10 +26,10 @@ void cal::Animation::stop() {
 void cal::Animation::update(float dt) {
 	if (!active) return;
 	time+=dt;
-	if (time>duration) {
-		time-=dt;
-		active=false;
-	}
+	// if (time>duration) {
+	// 	time-=dt;
+	// 	active=false;
+	// }
 }
 
 cal::Transform cal::Animation::getCurrentTransform() {

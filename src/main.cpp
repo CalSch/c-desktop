@@ -25,7 +25,7 @@ bool mouseRightReleased=false;
 
 
 float mouseSmoothness=3;
-float mouseSize=22;
+float mouseSize=32;
 #pragma endregion
 
 const char* str(int    a) {return std::to_string(a).c_str();}
@@ -117,7 +117,7 @@ int main() {
     #pragma endregion
     #pragma region animation
     
-    ani=cal::Animation(0.075f,{{0,0},cursorSpr.getScale(),0},{{0,0},cursorSpr.getScale()*0.8f,0},&cal::linear);
+    ani=cal::Animation(0.075f,{{0,0},cursorSpr.getScale(),0},{{0,0},cursorSpr.getScale()*0.85f,0},&cal::linear);
 
     #pragma endregion
 
